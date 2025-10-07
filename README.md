@@ -103,7 +103,7 @@ The model outperforms a random baseline  and provides reliable probability score
    import pandas as pd
 
    # Load model
-   with open('models/churn_model.pkl', 'rb') as f:
+   with open('../churn-predicting-model.pkl', 'rb') as f:
        model = pickle.load(f)
 
    # Sample new data (DataFrame)
