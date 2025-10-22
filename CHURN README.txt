@@ -145,8 +145,6 @@ Contributions are welcome! Please fork the repo, create a feature branch, and su
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Contact
 
-For questions or customizations, reach out to [GODFREY IMBINDI ADEMBESA] at [godfreyimbindi@gmail.com].  
 
 *Project developed with ❤️ using Python and Scikit-learn. Last updated: October 2025.*
