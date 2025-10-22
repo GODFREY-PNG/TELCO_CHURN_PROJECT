@@ -125,6 +125,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-For questions or customizations, reach out to [GODFREY IMBINDI ADEMBESA] at [godfreyimbindi@gmail.com].  
+ 
 
 *Project developed with ❤️ using Python and Scikit-learn. Last updated: October 2025.*
