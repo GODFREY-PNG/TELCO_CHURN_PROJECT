@@ -41,26 +41,6 @@ Installation
    - seaborn` and `matplotlib` for visualizations
    - pickle` for model serialization
 
-Project Structure
-
-telco-churn-prediction/
-├── data/
-│   └── telco_churn.csv          # Raw dataset
-├── notebooks/
-│   └── 01_churn_analysis.ipynb  # Exploratory Data Analysis (EDA) and Modeling
-├── src/
-│   ├── data_preprocessing.py    # Data cleaning and feature engineering
-│   ├── model_training.py        # Model building and evaluation
-│   └── insights.py              # Feature importance and odds ratio calculations
-├── models/
-│   └── churn_model.pkl          # Saved trained model
-├── visualizations/
-│   ├── correlation_heatmap.png
-│   ├── class_balance.png
-│   └── odds_ratio_plot.png
-├── requirements.txt              # Dependencies
-└── README.md                    # This file
-
  Methodology
 
 The project follows a structured CRISP-DM (Cross-Industry Standard Process for Data Mining) approach, with a focus on transparency and reproducibility. Below is a high-level overview of the key steps:
@@ -107,8 +87,6 @@ From the analysis:
 
 These insights can inform retention campaigns, such as offering discounts to at-risk customers.
 
-[Sample Odds Ratio Plot](visualizations/odds_ratio_plot.png)  
-*(Horizontal bar chart showing top 10 features by odds ratio impact on churn.)*
 
 The model outperforms a random baseline  and provides reliable probability scores for risk segmentation.
 
@@ -146,5 +124,6 @@ Contributions are welcome! Please fork the repo, create a feature branch, and su
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 
+ 
 
 *Project developed with ❤️ using Python and Scikit-learn. Last updated: October 2025.*
