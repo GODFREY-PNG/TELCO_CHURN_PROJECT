@@ -1,129 +1,71 @@
-Telco Customer Churn Prediction and Insights Using Machine Learning
+# Telco Customer Churn Prediction
 
-Overview
+Churn in telecom runs at 20–30% annually. In this dataset it was 26.5% 
+roughly $1.5M in revenue exposure based on average monthly spend.
+Most of those customers showed patterns before leaving. This project
+builds a model to catch those patterns early enough to act on them.
 
-This project leverages machine learning to predict customer churn in a telecommunications company, enabling proactive retention strategies. By analyzing historical customer data, we identify key factors influencing churn and build a robust predictive model using logistic regression. The solution provides actionable insights, such as odds ratios for high-impact features, to guide business decisions like targeted interventions and resource allocation.
+## What I Did
 
-Key outcomes include:
-- A trained model with high predictive accuracy for churn probability.
-- Visualizations highlighting data patterns, correlations, and feature importance.
-- Insights into the most influential drivers of churn (e.g., contract type, monthly charges).
+Started with a data quality issue standard checks missed — `TotalCharges`
+was stored as a string, so blank values returned zero nulls. That kind of
+silent error corrupts everything downstream if you don't catch it early.
 
-This deliverable demonstrates a complete end-to-end pipeline, from data exploration to model deployment, ensuring scalability and interpretability.
+EDA told a clear story before any modeling: month-to-month customers on
+fiber optic paying by electronic check churned at nearly 3x everyone else.
+Features were built around commitment signals — service depth, payment method,
+and spend relative to tenure — not just raw service subscriptions.
 
-Table of Contents
-- [Installation]
-- [Project Structure
-- [Methodology]
-- [Key Insights]
-- [Model Evaluation]
-- [Usage]
-- [Contributing]
-- [License]
-- [Contact]
+## Model Selection
 
-Installation
+Three models trained on the same balanced data, evaluated on the same test set.
+Logistic Regression won on recall — the metric that actually matters here.
+Missing a churner costs far more than an unnecessary retention call.
 
+| Model | Recall | Missed Churners | ROC-AUC |
+|---|---|---|---|
+| Logistic Regression | 0.89 | 41 | 0.842 |
+| GBM (RandomizedSearchCV) | 0.781 | 82 | 0.826 |
+| Random Forest | 0.559 | — | 0.819 |
 
-1. Set Up Virtual Environment** (Recommended)  
-   
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   
+GBM was fully tuned with 30-iteration hyperparameter search — it still lost.
+The gap between CV recall (0.968) and test recall (0.781) confirmed overfitting
+driven by aggressive parameters on SMOTE-balanced folds.
 
-2. Install Dependencies  
-   Install required libraries  
-   
-   Core libraries include:
-   - pandas` for data manipulation
-   - numpy` for numerical operations
-   - scikit-learn` for modeling and preprocessing
-   - seaborn` and `matplotlib` for visualizations
-   - pickle` for model serialization
+Threshold tuning (0.5 → 0.35) with class weighting reduced missed churners
+from 80 to 41, recovering an additional $30,420 per cycle over baseline.
 
- Methodology
+## Key Findings
 
-The project follows a structured CRISP-DM (Cross-Industry Standard Process for Data Mining) approach, with a focus on transparency and reproducibility. Below is a high-level overview of the key steps:
+- Month-to-month contract is the single strongest churn predictor
+- First 12 months is the highest-risk window — drops sharply after year one
+- Fiber + month-to-month + no add-ons = highest combined risk profile
+- Three distinct high-risk segments identified via K-Means clustering,
+  each with a different recommended retention strategy
 
-1. Data Ingestion and Exploration
-- Loaded the Telco customer dataset (`telco_churn.csv`) into a Pandas DataFrame.
-- Performed initial investigation using `df.info()` to assess data types, shape, and memory usage.
-- Converted object-type columns (e.g., categorical features) to appropriate float types where applicable.
+## What-If Analysis
 
-2. Data Cleaning and Preparation
-- Identified and handled missing values through imputation or removal.
-- Analyzed correlations among numerical features and visualized them via a Seaborn heatmap for quick pattern detection.
-- Checked class balance for the target variable (churn: Yes/No) and plotted a bar graph to reveal any imbalances 
-- Identified high- and low-cardinality categorical features for optimal encoding strategies.
-- Transformed the boolean target to binary (1 for churn, 0 for retention).
+The model was used to simulate retention interventions — not just flag customers.
+A contract switch combined with one added service reduced a medium-high risk
+customer's churn probability from 82% to 45%, with a retention break-even
+point of $346. Below that cost, the intervention is profitable.
 
-3. Feature Engineering and Splitting
-- Split data into feature matrix (X) and target vector (y).
-- Applied a randomized train-test split (80/20) to ensure unbiased evaluation.
+## Stack
 
-4. Model Building
-- Established a baseline model for comparison.
-- Built a logistic regression model using a Scikit-learn Pipeline:
-  - One-Hot Encoder for categorical variables.
-  - Iterative fitting to optimize hyperparameters.
-- Generated churn probabilities on the test set for probabilistic predictions.
+Python · pandas · scikit-learn · imbalanced-learn · SHAP · matplotlib · seaborn
 
-5. Model Evaluation and Insights
--Evaluated using a Train-Test Accuracy Evaluation to detect potential overfitting.This ensures reliable predictions for high-stakes retention decisions.
-- Extracted feature importances and computed odds ratios to quantify impact (EXAMPLE., odds ratio >1 indicates increased churn risk).
-- Visualized top odds ratios in a horizontal bar graph, highlighting features like "Month-to-Month Contract" (high positive effect) and "Fiber Optic Internet" (elevated risk).
+## Project Structure
+├── notebook/
+│   └── CHURN_v2.ipynb
+├── data/
+│   └── WA_Fn-UseC_-Telco-Customer-Churn.csv
+└── README.md
 
-6. Model Persistence
-- Serialized the trained model using Pickle for easy deployment and reloading.
+**FastAPI deployment endpoint in progress.**
 
-All code is modular, commented, and executable in Jupyter notebooks for interactive exploration.
+## On Metric Choice
 
-Key Insights
-
-From the analysis:
-- The odds ratios from the logistic regression model in Telco churn analysis reveal how customer features multiplicatively alter churn odds—values above 1 heighten departure risk, below 1 foster retention, and exactly 1 is neutral—visualized in a horizontal bar chart with blue bars extending rightward from feature names, benchmarked by a red dashed line at 1.0 for easy impact assessment. Dominating as the strongest predictors, fiber optic internet (odds ratio ~2.2) likelihood due to unmet premium expectations amid competition, while month-to-month contracts (~2.0) triple it by enabling effortless switches without loyalty locks. Moderate risks emerge from streaming TV and movies (~1.8–2.0), whose commoditized bundles fail to bind users; absent online security or tech support (~1.7 each), which undermine trust in a threat-prone digital world; electronic check payments and paperless billing (~1.6), sparking irritation through transaction glitches or overlooked notices; multiple lines (~1.5), straining networks into frustration; and senior citizen status (~1.4), tied to tech barriers or price sensitivity. Collectively, these highlight churn fueled by service gaps and billing hassles over core flaws, with the model explaining about 25% of variance—pair it with tenure or charges for fuller context. For impact, target fiber/month-to-month users with contract incentives and support boosts, potentially curbing churn 20–30% via proactive perks.
-
-- **Data Quality**: Minimal missing values (handled via mean imputation); moderate class imbalance.
-
-These insights can inform retention campaigns, such as offering discounts to at-risk customers.
-
-
-The model outperforms a random baseline  and provides reliable probability scores for risk segmentation.
-
-## Usage
-
-1. **Run EDA and Training**:  
-   ```
-   jupyter notebook notebooks/01_churn_analysis.ipynb
-   ```
-
-2. **Predict on New Data**:  
-   ```python
-   import pickle
-   import pandas as pd
-
-   # Load model
-   with open('../churn-predicting-model.pkl', 'rb') as f:
-       model = pickle.load(f)
-
-   # Sample new data (DataFrame)
-   new_customer = pd.DataFrame({...})  # Your features here
-   probabilities = model.predict_proba(new_customer)[:, 1]  # Churn probability
-   print(f"Churn Probability: {probabilities[0]:.2%}")
-   ```
-
-3. **Generate Insights**:  
-   Run `python src/insights.py` to recompute and plot odds ratios.
-
-## Contributing
-
-Contributions are welcome! Please fork the repo, create a feature branch, and submit a pull request with detailed changes.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-
- 
-
-*Project developed with ❤️ using Python and Scikit-learn. Last updated: October 2025.*
+A model predicting "no churn" for everyone scores 73% accuracy and catches
+zero at-risk customers. Recall asks the right question  of everyone who
+actually churned, how many did the model flag in time? That is the number
+that connects to revenue.
