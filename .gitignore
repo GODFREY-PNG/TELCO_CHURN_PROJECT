@@ -6,3 +6,5 @@ __pycache__/
 *.xlsx
 .ipynb_checkpoints/
 *.pkl
+.ipynb_checkpoints/
+*.pkl
