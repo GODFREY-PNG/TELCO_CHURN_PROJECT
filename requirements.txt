@@ -2,6 +2,6 @@ fastapi==0.115.12
 uvicorn==0.34.2
 pandas==2.2.3
 scikit-learn==1.6.1
-imbalanced-learn==0.13.1
+imbalanced-learn==0.14.1
 pydantic==2.11.4
 python-multipart==0.0.20
