@@ -1,7 +1,7 @@
-fastapi==0.111.0
-uvicorn==0.29.0
-pandas==2.2.2
-scikit-learn==1.4.2
-imbalanced-learn==0.12.2
-pydantic==2.7.1
-python-multipart==0.0.9
+fastapi==0.115.12
+uvicorn==0.34.2
+pandas==2.2.3
+scikit-learn==1.6.1
+imbalanced-learn==0.13.1
+pydantic==2.11.4
+python-multipart==0.0.20
