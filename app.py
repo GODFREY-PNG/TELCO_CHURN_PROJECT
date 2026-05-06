@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 
 # replace with your actual railway url before deploying
-API_URL = "http://localhost:8000"
+API_URL = "https://telcochurnproject-production.up.railway.app"
 
 st.set_page_config(
     page_title="Churn Intelligence — Telco Retention",
