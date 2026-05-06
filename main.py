@@ -502,3 +502,9 @@ async def chart_threshold_curve():
 
     plt.tight_layout()
     return fig_to_response(fig)
+
+    
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
